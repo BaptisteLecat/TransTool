@@ -84,6 +84,7 @@ namespace TransTool
             }catch(Exception e)
             {
                 error_state = 0;
+                MessageBox.Show("Impossible d'accéder à la base de donnée.\nConsultez les logs pour en savoir plus.", "Erreur de connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.error_log.Type_error = e.Source.ToString();
                 this.error_log.Error_content = e.Message;
                 this.error_log.WriteInFile();
@@ -117,6 +118,7 @@ namespace TransTool
             }catch(MySqlException e)
             {
                 error_state = 0;
+                MessageBox.Show("Impossible d'accéder à la base de donnée.\nConsultez les logs pour en savoir plus.", "Erreur de connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.error_log.Type_error = e.Source.ToString();
                 this.error_log.Error_content = e.Message;
                 this.error_log.WriteInFile();
@@ -160,6 +162,7 @@ namespace TransTool
             catch(MySqlException e)
             {
                 error_state = 0;
+                MessageBox.Show("Impossible d'accéder à la base de donnée.\nConsultez les logs pour en savoir plus.", "Erreur de connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.error_log.Type_error = e.Source.ToString();
                 this.error_log.Error_content = e.Message;
                 this.error_log.WriteInFile();
@@ -198,22 +201,23 @@ namespace TransTool
                 {
                     if (EmailExist(email) == 2)
                     {
-                        InsertAccount(email, password);
+                        InsertAccount(email, ComputeSha256Hash(password));
                         error_state = 2;
                     }
                     else
                     {
-                        MessageBox.Show("Cet email existe déjà");
+                        MessageBox.Show("Cet email est déjà utilisé.", "Erreur Email", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Le format de l'email n'est pas correct.");
+                    MessageBox.Show("Le format de l'email est incorrect.", "Erreur Email", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
             catch(Exception e)
             {
                 error_state = 0;
+                MessageBox.Show("Impossible d'accéder à la base de donnée.\nConsultez les logs pour en savoir plus.", "Erreur de connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.error_log.Type_error = e.Source.ToString();
                 this.error_log.Error_content = e.Message;
                 this.error_log.WriteInFile();
