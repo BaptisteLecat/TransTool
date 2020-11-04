@@ -9,24 +9,22 @@ namespace TransTool
 {
     class User
     {
-        private int user_id;
-        private string user_email;
-        private string user_password;
-        private DateTime user_dateCreation;
+        private int id;
+        private string email;
+        private string password;
+        private DateTime dateCreation;
         //lIST DE TRANSFERT ET LIST D'amis.
 
         public User(string email, string password)
         {
-            this.user_email = email;
-            this.user_password = ComputeSha256Hash(password);
+            this.email = email;
+            this.password = ComputeSha256Hash(password);
         }
 
-        public string RegisterMe()
-
-        public int User_id { get => user_id; set => user_id = value; }
-        public string User_email { get => user_email; set => user_email = value; }
-        public string User_password { get => user_password; set => user_password = value; }
-        public DateTime User_dateCreation { get => user_dateCreation; set => user_dateCreation = value; }
+        public int Id { get => id; set => id = value; }
+        public string Email { get => email; set => email = value; }
+        public string Password { get => password; set => password = value; }
+        public DateTime DateCreation { get => dateCreation; set => dateCreation = value; }
 
         private string ComputeSha256Hash(string rawData)
         {
