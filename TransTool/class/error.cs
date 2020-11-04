@@ -10,10 +10,22 @@ namespace TransTool
     class Error
     {
         private string error_code;
+        private string error_source;
+        private string error_message;
+        private Log log;
 
         public Error(string error_code)
         {
             this.error_code = error_code;
+            DisplayError();
+        }
+
+        public Error(string error_source, string error_message, Log log)
+        {
+            this.error_source = error_source;
+            this.error_message = error_message;
+            this.log = new Log();
+            DisplayError();
         }
 
         public void DisplayError()
@@ -29,8 +41,11 @@ namespace TransTool
                     MessageBox.Show("Le format de l'email est incorrect.", "Erreur Email", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     break;
 
-                case "connection_unreachable":
-                    MessageBox.Show("Impossible d'accéder à la base de donnée.\nConsultez les logs pour en savoir plus.", "Erreur de connection", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                default:
+                    MessageBox.Show("Une erreur est survenue.\nConsultez les logs pour en savoir plus.", this.error_source, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                    this.log.Type_error = this.error_source;
+                    this.log.Error_content = this.error_message;
+                    this.log.WriteInFile();
                     break;
             }
         }

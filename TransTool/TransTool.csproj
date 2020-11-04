@@ -58,6 +58,7 @@
     <Compile Include="class\log.cs" />
     <Compile Include="class\rememberMe.cs" />
     <Compile Include="class\rememberMe_Info.cs" />
+    <Compile Include="class\transfert.cs" />
     <Compile Include="class\user.cs" />
     <Compile Include="FormLogin.cs">
       <SubType>Form</SubType>

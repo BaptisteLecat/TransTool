@@ -18,44 +18,34 @@ namespace TransTool
         private const string db_identifiant = "root";
         private const string db_password = "";
         private MySqlConnection connection;
-        private Log error_log = new Log();
+        private Log log;
+        private Error error;
 
         public Connection()
         {
             ConnectionState();
-            
+            this.log = new Log();
         }
 
-        public bool ConnectionState()
+        public void ConnectionState()
         {
-            int nb_error = 0;
-            bool error_state = false;
             string connection_string = "server=" + db_server + ";database=" + db_database + ";uid=" + db_identifiant + ";passwd=" + db_password;
 
-            do
+            try
             {
-                nb_error++;
-                try
-                {
-                    this.connection = new MySqlConnection(connection_string);
-                    connection.Open();
-                }
-                catch (MySqlException e)
-                {
-                    error_state = true;
-                }
-
-                if(error_state == false)
-                {
-                    break;
-                }
-
-            } while (nb_error < 2);
+                this.connection = new MySqlConnection(connection_string);
+                connection.Open();
+            }
+            catch (MySqlException e)
+            {
+                error = new Error(e.Source.ToString(), e.Message, this.log);
+            }
 
             connection.Close();
-            return error_state;
 
         }
+
+        #region Connection
 
         //error_state = 0 => error system ; error_state = 1 => error password or email ; error_state = 2 => success.
         public int LoginIsValid(string email, string password)
@@ -81,17 +71,38 @@ namespace TransTool
                     }
                 }
 
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 error_state = 0;
-                this.error_log.Type_error = e.Source.ToString();
-                this.error_log.Error_content = e.Message;
-                this.error_log.WriteInFile();
+                error = new Error(e.Source.ToString(), e.Message, this.log);
             }
 
             connection.Close();
             return error_state;
         }
+
+        #endregion
+
+        private string ComputeSha256Hash(string rawData)
+        {
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // ComputeHash - returns byte array  
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+
+                // Convert byte array to a string   
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
+
+        #region Register
 
         //error_state = 0 => error system ; error_state = 1 => emailExist ; error_state = 2 => Email doesn't exist.
         private int EmailExist(string email)
@@ -114,12 +125,11 @@ namespace TransTool
                         error_state = 1;
                     }
                 }
-            }catch(MySqlException e)
+            }
+            catch (MySqlException e)
             {
                 error_state = 0;
-                this.error_log.Type_error = e.Source.ToString();
-                this.error_log.Error_content = e.Message;
-                this.error_log.WriteInFile();
+                error = new Error(e.Source.ToString(), e.Message, this.log);
             }
 
             connection.Close();
@@ -151,40 +161,20 @@ namespace TransTool
 
                 if (read_insertAccount.Read())
                 {
-                    if(read_insertAccount.RecordsAffected > 0)
+                    if (read_insertAccount.RecordsAffected > 0)
                     {
                         error_state = 2;
                     }
                 }
             }
-            catch(MySqlException e)
+            catch (MySqlException e)
             {
                 error_state = 0;
-                this.error_log.Type_error = e.Source.ToString();
-                this.error_log.Error_content = e.Message;
-                this.error_log.WriteInFile();
+                error = new Error(e.Source.ToString(), e.Message, this.log);
             }
 
             connection.Close();
             return error_state;
-        }
-
-        private string ComputeSha256Hash(string rawData)
-        {
-            // Create a SHA256   
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                // ComputeHash - returns byte array  
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-
-                // Convert byte array to a string   
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
-            }
         }
 
         //error_state = 0 => error system ; error_state = 1 => error ; error_state = 2 => Success Register.
@@ -211,15 +201,16 @@ namespace TransTool
                     MessageBox.Show("Le format de l'email n'est pas correct.");
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 error_state = 0;
-                this.error_log.Type_error = e.Source.ToString();
-                this.error_log.Error_content = e.Message;
-                this.error_log.WriteInFile();
+                error = new Error(e.Source.ToString(), e.Message, this.log);
             }
 
             return error_state;
         }
+
+        #endregion
+
     }
 }
