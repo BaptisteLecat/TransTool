@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TransTool
 {
-    class Error
+    public class Error
     {
         private string error_code;
         private string error_source;
@@ -24,7 +24,7 @@ namespace TransTool
         {
             this.error_source = error_source;
             this.error_message = error_message;
-            this.log = new Log();
+            this.log = log;
             DisplayError();
         }
 
@@ -42,7 +42,7 @@ namespace TransTool
                     break;
 
                 default:
-                    MessageBox.Show("Une erreur est survenue.\nConsultez les logs pour en savoir plus.", this.error_source, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                    MessageBox.Show("Une erreur est survenue.\nConsultez les logs pour en savoir plus.", this.error_source, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.log.Type_error = this.error_source;
                     this.log.Error_content = this.error_message;
                     this.log.WriteInFile();

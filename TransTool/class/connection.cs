@@ -19,12 +19,11 @@ namespace TransTool
         private const string db_password = "";
         private MySqlConnection connection;
         private Log log;
-        private Error error;
 
         public Connection()
         {
-            ConnectionState();
             this.log = new Log();
+            ConnectionState();
         }
 
         public void ConnectionState()
@@ -38,7 +37,7 @@ namespace TransTool
             }
             catch (MySqlException e)
             {
-                error = new Error(e.Source.ToString(), e.Message, this.log);
+                Error error = new Error(e.Source.ToString(), e.Message, this.log);
             }
 
             connection.Close();
@@ -75,7 +74,7 @@ namespace TransTool
             catch (Exception e)
             {
                 error_state = 0;
-                error = new Error(e.Source.ToString(), e.Message, this.log);
+                Error error = new Error(e.Source.ToString(), e.Message, this.log);
             }
 
             connection.Close();
@@ -129,7 +128,7 @@ namespace TransTool
             catch (MySqlException e)
             {
                 error_state = 0;
-                error = new Error(e.Source.ToString(), e.Message, this.log);
+                Error error = new Error(e.Source.ToString(), e.Message, this.log);
             }
 
             connection.Close();
@@ -154,7 +153,7 @@ namespace TransTool
                 connection.Open();
                 MySqlCommand insertAccount = new MySqlCommand(request, connection);
                 insertAccount.Parameters.AddWithValue("@emailuser", email);
-                insertAccount.Parameters.AddWithValue("passworduser", password);
+                insertAccount.Parameters.AddWithValue("passworduser", ComputeSha256Hash(password));
                 DateTime dateToday = DateTime.Now;
                 insertAccount.Parameters.AddWithValue("@datecreationuser", dateToday.ToString("yyyy/MM/dd"));
                 MySqlDataReader read_insertAccount = insertAccount.ExecuteReader();
@@ -170,7 +169,7 @@ namespace TransTool
             catch (MySqlException e)
             {
                 error_state = 0;
-                error = new Error(e.Source.ToString(), e.Message, this.log);
+                Error error = new Error(e.Source.ToString(), e.Message, this.log);
             }
 
             connection.Close();
@@ -204,10 +203,44 @@ namespace TransTool
             catch (Exception e)
             {
                 error_state = 0;
-                error = new Error(e.Source.ToString(), e.Message, this.log);
+                Error error = new Error(e.Source.ToString(), e.Message, this.log);
             }
 
             return error_state;
+        }
+
+        #endregion
+
+        #region Transfert
+
+        public List<Transfert> REQTransfert_LoadByIdUser(string iduser)
+        {
+            List<Transfert> list_transfert = new List<Transfert>();
+
+            string request = "SELECT * FROM user, realiser, transfert WHERE user_id = realiser_iduser and transfert_id = realiser_idtransfert and user_id = @userid";
+
+            try
+            {
+
+            }
+            catch (Exception e)
+            {
+                error_state = 0;
+                Error error = new Error(e.Source.ToString(), e.Message, this.log);
+            }
+
+            MySqlCommand loadTransfert = new MySqlCommand(request, this.connection);
+            loadTransfert.Parameters.AddWithValue("@iduser", iduser);
+            MySqlDataReader read_loadTranfert = loadTransfert.ExecuteReader();
+            if (read_loadTranfert.Read())
+            {
+                while (read_loadTranfert.HasRows)
+                {
+
+                }
+            }
+
+            return list_transfert;
         }
 
         #endregion

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TransTool
 {
-    class Transfert
+    public class Transfert
     {
         private int id;
         private string content;
